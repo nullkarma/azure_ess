@@ -3,7 +3,7 @@ variable "es_deployment_template" {
 }
 
 variable "es_version" {
-  default = 8.4.3
+  default = "8.4.3"
 }
 
 variable "es_node_memory_size" {
