@@ -1,17 +1,17 @@
 data "template_file" "es_config" {
-  template = templatefile("elasticsearch.yaml.tpl", {
-    kibana_url = ""
-    federation_metadata_url = var.azuread_federation_metadata_url
-    azuread_id = var.azuread_id
+  template = templatefile(
+    "${path.module}/elasticsearch.yaml.tpl", {
+      kibana_endpoint         = var.ec_deployment.kibana.0.https_endpoint
+      federation_metadata_url = var.azuread_federation_metadata_url
+      azuread_id              = var.azuread_id
   })
 }
 
-/*
 data "template_file" "kibana_config" {
-  template = templatefile("kibana.yaml.tpl", {
+  template = templatefile(
+    "${path.module}/kibana.yaml.tpl", {
   })
 }
-*/
 
 resource "ec_deployment" "ess" {
   name                   = var.ec_deployment.name
@@ -24,11 +24,9 @@ resource "ec_deployment" "ess" {
   elasticsearch {
     autoscale = var.es_autoscale
     ref_id    = var.ec_deployment.elasticsearch.0.ref_id
-    /*
     config {
-      user_settings_yaml =
+      user_settings_yaml = data.template_file.es_config.rendered
     }
-    */
     dynamic "topology" {
       for_each = var.es_topology
 
@@ -46,11 +44,9 @@ resource "ec_deployment" "ess" {
   kibana {
     ref_id                       = var.ec_deployment.kibana.0.ref_id
     elasticsearch_cluster_ref_id = var.ec_deployment.elasticsearch.0.ref_id
-    /*
     config {
-      user_settings_yaml = ""
+      user_settings_yaml = data.template_file.kibana_config.rendered
     }
-    */
     topology {
       instance_configuration_id = var.kibana_deployment_template
       size                      = var.kibana_memory_size

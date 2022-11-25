@@ -37,7 +37,7 @@ variable "kibana_zone_count" {
 
 variable "ec_deployment" {
   description = "map from data source ec_deployment"
-  default = {}
+  default     = {}
 }
 
 variable "azuread_federation_metadata_url" {}
