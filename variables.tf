@@ -2,6 +2,8 @@ variable "es_deployment_template" {
   default = "azure-storage-optimized"
 }
 
+variable "ec_deployment_id" {}
+
 variable "es_autoscale" {
   default = "false"
 }
@@ -35,10 +37,6 @@ variable "kibana_zone_count" {
   default = 1
 }
 
-variable "ec_deployment" {
-  description = "map from data source ec_deployment"
-  default     = {}
-}
-
-variable "azuread_federation_metadata_url" {}
+variable "azure_tenant_id" {}
 variable "azuread_id" {}
+variable "azuread_application_id" {}

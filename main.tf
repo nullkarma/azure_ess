@@ -1,9 +1,15 @@
+data "ec_deployment" "this" {
+  id = var.ec_deployment_id
+}
+
 data "template_file" "es_config" {
   template = templatefile(
     "${path.module}/elasticsearch.yaml.tpl", {
-      kibana_endpoint         = var.ec_deployment.kibana.0.https_endpoint
-      federation_metadata_url = var.azuread_federation_metadata_url
+      kibana_endpoint         = data.ec_deployment.this.kibana.0.https_endpoint
+      federation_metadata_url = var.azure_tenant_id
       azuread_id              = var.azuread_id
+      azure_tenant_id         = var.azure_tenant_id
+      azuread_application_id  = var.azuread_application_id
   })
 }
 
@@ -14,16 +20,16 @@ data "template_file" "kibana_config" {
 }
 
 resource "ec_deployment" "ess" {
-  name                   = var.ec_deployment.name
-  alias                  = var.ec_deployment.alias
+  name                   = data.ec_deployment.this.name
+  alias                  = data.ec_deployment.this.alias
   deployment_template_id = var.es_deployment_template
-  region                 = var.ec_deployment.region
+  region                 = data.ec_deployment.this.region
   version                = var.es_version
-  tags                   = var.ec_deployment.tags
+  tags                   = data.ec_deployment.this.tags
 
   elasticsearch {
     autoscale = var.es_autoscale
-    ref_id    = var.ec_deployment.elasticsearch.0.ref_id
+    ref_id    = data.ec_deployment.this.elasticsearch.0.ref_id
     config {
       user_settings_yaml = data.template_file.es_config.rendered
     }
@@ -42,8 +48,8 @@ resource "ec_deployment" "ess" {
     }
   }
   kibana {
-    ref_id                       = var.ec_deployment.kibana.0.ref_id
-    elasticsearch_cluster_ref_id = var.ec_deployment.elasticsearch.0.ref_id
+    ref_id                       = data.ec_deployment.this.kibana.0.ref_id
+    elasticsearch_cluster_ref_id = data.ec_deployment.this.elasticsearch.0.ref_id
     config {
       user_settings_yaml = data.template_file.kibana_config.rendered
     }

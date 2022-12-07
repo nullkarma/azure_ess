@@ -1,18 +1,9 @@
-xpack.security.authc.realms:
-    native:
-      local:
-        order: 0
-    saml:
-      azure_ad:
-        order: 1
-        attributes.principal: "https://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
-        attributes.groups: "https://schemas.microsoft.com/ws/2008/06/identity/claims/role"
-        attributes.name: "https://schemas.microsoft.com/identity/claims/displayname"
-        attributes.mail: "https://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
-        idp.metadata.path: "${federation_metadata_url}"
-        idp.entity_id: "${azuread_id}"
-        sp.entity_id: "${kibana_endpoint}"
-        sp.acs: "${kibana_endpoint}/api/security/saml/callback"
-        sp.logout: "${kibana_endpoint}/logout"
-
-
+xpack.security.authc.realms.saml.azure_ad:
+    order: 2
+    attributes.principal: nameid
+    attributes.groups: "https://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+    idp.metadata.path: "https://login.microsoftonline.com/${azure_tenant_id}/federationmetadata/2007-06/federationmetadata.xml?appid=${azuread_application_id}"
+    idp.entity_id: "https://sts.windows.net/${azure_tenant_id}/"
+    sp.entity_id: "${kibana_endpoint}"
+    sp.acs: "${kibana_endpoint}/api/security/saml/callback"
+    sp.logout: "${kibana_endpoint}/logout"
